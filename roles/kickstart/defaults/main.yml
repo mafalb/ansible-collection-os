@@ -18,6 +18,6 @@ os_lang:
 - de_AT.UTF-8
 
 os_timezone: Europe/Vienna
-os_timezone_utc: true
+os_utc: true
 
 ...

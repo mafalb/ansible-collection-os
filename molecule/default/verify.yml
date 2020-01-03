@@ -10,9 +10,19 @@
     changed_when: false
     command: ksvalidator -v RHEL8 /tmp/kickstart-RHEL8.ks
 
+  - name: clock is in utc
+    changed_when: false
+    command: grep -- --utc /tmp/kickstart-RHEL8.ks
+
   - name: check /tmp/kickstart-RHEL8-local.ks
     changed_when: false
     command: ksvalidator -v RHEL8 /tmp/kickstart-RHEL8-local.ks
+
+  - name: clock is not in utc
+    changed_when: false
+    failed_when: __not_utc.rc == 0
+    command: grep -- --utc /tmp/kickstart-RHEL8-local.ks
+    register: __not_utc
 
   - name: check /tmp/kickstart-RHEL7.ks
     changed_when: false

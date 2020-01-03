@@ -22,6 +22,7 @@
       src: test.ks.j2
       dest: /tmp/kickstart-RHEL8-local.ks
       os_fqdn: testfqdn.mafalb.at
+      os_utc: false
 
     - role: mafalb.os.kickstart
       os_kickstart_version: RHEL7

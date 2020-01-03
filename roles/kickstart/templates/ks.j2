@@ -21,7 +21,7 @@ keyboard {{ os_keyboard[0] }}
 {% else %}
 keyboard --vckeymap={{ os_keyboard[0] }} --xlayouts={{ os_keyboard|join(',') }}
 {% endif %}
-timezone {{ os_timezone }}{% if os_timezone_utc %} --isUtc{% endif %}
+timezone {{ os_timezone }}{% if os_utc %} --utc{% endif %}
 
 firewall --enabled --service=ssh
 services --enabled=sshd,chronyd
