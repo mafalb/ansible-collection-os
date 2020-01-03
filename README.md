@@ -1,37 +1,45 @@
-# An ansible role for provisioning Operating systems to bare metal hardware [![Build Status](https://travis-ci.com/mafalb/ansible-provision.svg?branch=master)](https://travis-ci.com/mafalb/ansible-provision)
+# Ansible collection for configuring Operating systems
 
-## Basic Usage
+## OS data
 
+```yaml
+os_install_type: install
+os_install_method: cdrom
+os_keyboard:
+- at
+- us
+
+os_lang:
+- en_US.UTF-8
+- de_AT.UTF-8
+
+os_timezone: Europe/Vienna
+os_utc: true
 ```
+
+## role: mafalb.os.kickstart
+
+### Basic Usage
+
+```ansible
 - hosts: localhost
   roles:
-    - role: kickstart
+    - role: mafalb.os.kickstart
       dest: /var/www/html/ks.cfg
-``` 
+```
 
-## Variables
+### Variables
 
 **src** - the path of the source of the kickstart file, relative to the `{{ playbook_dir }}`, located on the control host. It could be a jinja2 template or a static file but is optional. If you omit it the default template shipped with this role is used.
-```
-src: "templates/my_kickstart_template.j2"
+
+```yaml
+src: my_kickstart_template.j2
 ```
 
-**dest** - the destination for the provision file, e.g.
-```
+**dest** - the destination for the provision file
+
+```yaml
 dest: /var/www/html/ks.cfg
 ```
 
-## kickstart data
-
-```
-ks:
-  fqdn: srv01.example.com
-  user: ansible
-  disks:
-    - sda
-```
-  
-```
-ks.fqdn ansible_fqdn
-```
 

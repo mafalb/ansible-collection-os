@@ -8,7 +8,7 @@
     - os_kickstart_version is defined
     - os_wheel_users is defined
     - os_fqdn is defined
-    - os_kickstart_dest is defined
+    - dest is defined
 
 - name: debug
   debug: var=os_fqdn.split('.')[0]
@@ -17,8 +17,11 @@
   - debug
 
 - name: kickstart file is present
+  with_first_found:
+  - "{{ src|default(omit) }}"
+  - ks.j2
   template:
-    src: ks.j2
-    dest: "{{ os_kickstart_dest }}"
+    src: "{{ item }}"
+    dest: "{{ dest }}"
 
 ...
