@@ -1,0 +1,20 @@
+# vim: ft=yaml ts=2 expandtab:
+---
+
+- name: Verify
+  hosts: all
+
+  tasks:
+
+  - name: check /tmp/kickstart-RHEL8.ks
+    changed_when: false
+    command: ksvalidator -v RHEL8 /tmp/kickstart-RHEL8.ks
+
+  - name: check /tmp/kickstart-RHEL7.ks
+    changed_when: false
+    command: ksvalidator -v RHEL7 /tmp/kickstart-RHEL7.ks
+
+  - name: check /tmp/kickstart-RHEL6.ks
+    changed_when: false
+    command: ksvalidator -v RHEL6 /tmp/kickstart-RHEL6.ks
+...

@@ -1,0 +1,106 @@
+# vim: ts=4 nowrap:
+#version={{ os_kickstart_version }}
+
+{% if os_kickstart_version in os_kickstart_has_install %}
+install
+{% endif %}
+text
+reboot
+{% if os_install_method == 'cdrom' %}
+cdrom
+{% endif %}
+
+{% if os_kickstart_version in os_kickstart_has_no_addsupport %}
+lang {{ os_lang[0] }}
+{% else %}
+lang {{ os_lang[0] }}{% if os_lang[0]|length > 1 %} --addsupport={{ os_lang[1:]|join(',') }} {% endif %}
+{% endif %}
+
+{% if os_kickstart_version in os_kickstart_has_old_keyboard %}
+keyboard {{ os_keyboard[0] }}
+{% else %}
+keyboard --vckeymap={{ os_keyboard[0] }} --xlayouts={{ os_keyboard|join(',') }}
+{% endif %}
+timezone {{ os_timezone }}{% if os_timezone_utc %} --isUtc{% endif %}
+
+firewall --enabled --service=ssh
+services --enabled=sshd,chronyd
+selinux --enforcing
+bootloader --location=mbr
+firstboot --disable
+skipx
+
+network --hostname={{ os_fqdn }}
+network --device link --onboot yes
+
+zerombr
+clearpart --all --initlabel
+
+part /boot --ondisk sda --size 512 --asprimary --label boot
+part pv.00 --ondisk sda --size 12000 --grow --asprimary
+
+volgroup lvm.{{ os_fqdn.split('.')[0] }} pv.00
+
+# system partitions
+logvol /              --fstype xfs  --name wurzel --size 3000 --vgname lvm.{{ os_fqdn.split('.')[0] }}
+logvol /tmp           --fstype xfs  --name tmp    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /var           --fstype xfs  --name var    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid"
+logvol /var/log       --fstype xfs  --name log    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /var/log/audit --fstype xfs  --name audit  --size 500  --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol swap           --fstype swap --name swap   --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }}
+logvol /home          --fstype xfs --name home    --size 100  --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
+
+{% if os_install_root_password is defined %}
+rootpw --iscrypted {{ os_install_root_password }}
+{% endif %}
+{% for user in os_wheel_users %}
+user --groups wheel --name {{ user.user }} {% if user.uid is defined %} --uid {{ user.uid }} {% endif %} {% if user.gid is defined %} --gid {{ user.gid }} {% endif %} {% if user.password is defined %} --iscrypted {{ user.password }} {% endif %}
+{% endfor %}
+
+%post --logfile /root/ks-post.log
+set -x -v
+
+# Create .ssh
+{% for user in os_wheel_users %}
+install -d --owner={{ user.user }} --group={{ user.group|default(user.user) }} --mode=700 /home/{{ user.user }}/.ssh
+{% for pubkey in user.pubkeys %}
+cat >> /home/{{ user.user }}/.ssh/authorized_keys << PUBLIC_KEY
+{{ pubkey }}
+PUBLIC_KEY
+{% endfor %}
+{% endfor %}
+
+# Disable authentication with Passwords
+sed -i 's&^#\?PermitRootLogin[ \t]*.*&PermitRootLogin without-password&' /etc/ssh/sshd_config
+sed -i "s&^PasswordAuthentication[ \t]*.*&PasswordAuthentication no&g" /etc/ssh/sshd_config
+
+%end
+
+%post --nochroot --logfile /mnt/sysimage/root/ks-post-nochroot.log
+set -x -v
+
+# Copy anacondas logfiles
+cp /tmp/*log /mnt/sysimage/root/
+
+# Copy the pre log
+cp /tmp/ks-pre.log /mnt/sysimage/root/ks-pre.log
+cp /tmp/network.ks /mnt/sysimage/root/
+cp /tmp/partitions.ks /mnt/sysimage/root/
+
+# Copy the original ks file (that's me!)
+cp /run/install/ks.cfg /mnt/sysimage/root/
+
+%end
+
+{% block packages %}
+%packages
+@Core --nodefaults
+openssh-server
+chrony
+%end
+{% endblock %}
+
+{% block addons %}
+%addon com_redhat_kdump --enable --reserve-mb=auto
+%end
+{% endblock %}

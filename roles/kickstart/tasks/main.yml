@@ -1,0 +1,23 @@
+# vim: set ft=yaml ts=2 expandtab:
+---
+
+- name: assertions
+  assert:
+    that:
+    - os_install_method in ["cdrom"]
+    - os_kickstart_version is defined
+    - os_wheel_users is defined
+    - os_fqdn is defined
+
+- name: debug
+  debug: var=os_fqdn.split('.')[0]
+  tags:
+  - never
+  - debug
+
+- name: kickstart file is up to date
+  template:
+    src: ks.j2
+    dest: "{{ os_kickstart_dest }}"
+
+...

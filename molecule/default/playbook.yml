@@ -1,0 +1,25 @@
+# vim: ft=yaml ts=2 expandtab nowrap:
+---
+
+- name: Converge
+  vars:
+    os_wheel_users:
+    - user: mafalb
+      pubkeys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAqBKLbgm/95GnBGIMYWgE2EJAKRdczIQn/1os53H9wHR7/d8BN4NUQVaeKvoBku/FR1SaC/K8iEE/YDrOcq4oQ5Q8sDOYpf8iMlfit8uo09ZtY4REk0zo54VwDGsaxJuk7fZi4UVWAVe73zH8Af/zoFwA4kp7Lg5UWDrk0wAz3WdSROu7Eh/xvBTdwoJTV9bOT+DjB7IdyGjBpT3fAnIkBdDPcFfhVCiDPGaL3r6E6T/FmjwXIK7urrRdggQ0aVdujwNrCemVODouTe0dyfPGtx+yN/yHLe1PSY+MuIdQGpcXqLHFwYTLwK/X7NG+Mq2+geLYyaSB5XlStMjFkZrpuQ== mafalb # noqa 204
+  hosts: all
+  roles:
+    - role: mafalb.os.kickstart
+      os_kickstart_version: RHEL8
+      os_kickstart_dest: /tmp/kickstart-RHEL8.ks
+      os_fqdn: testfqdn.mafalb.at
+    - role: mafalb.os.kickstart
+      os_kickstart_version: RHEL7
+      os_kickstart_dest: /tmp/kickstart-RHEL7.ks
+      os_fqdn: testfqdn.mafalb.at
+    - role: mafalb.os.kickstart
+      os_kickstart_version: RHEL6
+      os_kickstart_dest: /tmp/kickstart-RHEL6.ks
+      os_fqdn: testfqdn.mafalb.at
+
+...

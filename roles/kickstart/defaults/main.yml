@@ -1,0 +1,23 @@
+# vim: set ft=yaml ts=2 expandtab:
+---
+
+__src_path: "{{ src is defined|ternary(playbook_dir + '/', None) }}"
+__src_file: "{{ src|default('ks.j2') }}"
+
+os_install_type: install
+os_install_method: cdrom
+
+os_keyboard:
+- at
+- us
+- us-mac
+- at-mac
+
+os_lang:
+- en_US.UTF-8
+- de_AT.UTF-8
+
+os_timezone: Europe/Vienna
+os_timezone_utc: true
+
+...

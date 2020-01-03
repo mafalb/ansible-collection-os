@@ -1,0 +1,28 @@
+# vim: set ft=yaml ts=2 expandtab:
+---
+namespace: mafalb
+name: os
+version: 0.0.1
+readme: README.md
+
+authors:
+- Markus Falb <markus.falb@mafalb.at>
+
+description: Ansible collection - install and configure OS
+
+license:
+- GPL-3.0-or-later
+
+tags:
+- os
+- linux
+- kickstart
+
+dependencies: {}
+
+repository: https://github.com/mafalb/ansible-collection-os
+documentation: https://github.com/mafalb/ansible-collection-os
+homepage: https://github.com/mafalb/ansible-collection-os
+issues: https://github.com/mafalb/ansible-collection-os/issues
+
+...

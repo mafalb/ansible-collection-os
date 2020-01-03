@@ -1,0 +1,23 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: fedora
+    image: fedora:latest
+provisioner:
+  name: ansible
+  ansible_args:
+    - --tags=all,debug
+    - --diff
+  lint:
+    name: ansible-lint
+  env:
+    ANSIBLE_COLLECTIONS_PATHS: "../../../../..:~/.ansible/collections"
+verifier:
+  name: ansible
+  lint:
+    name: ansible-lint

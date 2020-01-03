@@ -1,0 +1,78 @@
+# vim: set ft=yaml ts=2 expandtab:
+---
+
+os_kickstart_has_install:
+- FC3
+- FC4
+- FC5
+- FC6
+- F7
+- F8
+- F9
+- F10
+- F11
+- F12
+- F13
+- F14
+- F15
+- F16
+- F17
+- F18
+- F19
+- F20
+- F21
+- F22
+- F23
+- F24
+- F25
+- F26
+- F27
+- F28
+- RHEL3
+- RHEL4
+- RHEL5
+- RHEL6
+- RHEL7
+
+os_kickstart_has_no_addsupport:
+- FC3
+- FC4
+- FC5
+- FC6
+- F7
+- F8
+- F9
+- F10
+- F11
+- F12
+- F13
+- F14
+- F15
+- F16
+- F17
+- F18
+- RHEL3
+- RHEL4
+- RHEL5
+- RHEL6
+
+os_kickstart_has_old_keyboard:
+- FC3
+- FC4
+- FC5
+- FC6
+- F7
+- F8
+- F9
+- F10
+- F11
+- F12
+- F13
+- F14
+- F15
+- F16
+- F17
+- RHEL3
+- RHEL4
+- RHEL5
+- RHEL6

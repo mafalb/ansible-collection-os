@@ -1,0 +1,117 @@
+# vim: ts=4 nowrap:
+
+install
+text
+reboot
+
+url --mirrorlist http://mirrorlist.centos.org/?cc=at&arch=$basearch&repo=os&release=$releasever
+repo --name updates --mirrorlist http://mirrorlist.centos.org/?cc=at&arch=$basearch&repo=updates&release=$releasever
+#repo --name extras --mirrorlist http://mirrorlist.centos.org/?cc=at&arch=$basearch&repo=extras&release=$releasever
+#repo --name epel --mirrorlist http://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch
+
+# System language
+lang en_US.UTF-8 --addsupport=de_AT.UTF-8
+keyboard --vckeymap=at --xlayouts='at','us','at (mac)'
+timezone Etc/UTC --isUtc
+
+sshpw --username root --lock --iscrypted {{ bootstrap.initialpw.root }}
+sshpw --username inst --iscrypted {{ bootstrap.initialpw.root }}
+rootpw --iscrypted {{ bootstrap.initialpw.root }}
+user --groups wheel --name {{ bootstrap.initial_user }} --uid 10000 --gid 10000 --iscrypted {{ bootstrap.initialpw.initial_user }}
+
+
+firewall --enabled --service=ssh
+services --enabled=acpid,sshd,chronyd
+auth --enableshadow --enablecache --passalgo=sha512
+selinux --enforcing
+bootloader "crashkernel=auto" --location=mbr
+firstboot --disable
+skipx
+
+{% block network %}
+network --hostname=ks.fqdn
+network --device link {% if not bootstrap.ipv4 %}--noipv4{% endif %} --hostname={{ inventory_hostname }} --ipv6={{ bootstrap.ipv6_address }} --ipv6gateway={{ bootstrap.ipv6_gateway }} --nameserver {{ bootstrap.nameserver|join(",") }} --onboot yes
+{% endblock %}
+
+{% block storage %}
+zerombr
+clearpart --all --initlabel
+
+part /boot --ondisk {{ bootstrap.disk.disks[0] }} --size 512 --asprimary --label boot
+part pv.00 --ondisk {{ bootstrap.disk.disks[0] }} --size 12000 --grow --asprimary
+
+volgroup lvm.{{ inventory_hostname_short }} pv.00
+
+# system partitions
+logvol /              --fstype xfs  --name wurzel --size 3000 --vgname lvm.{{ inventory_hostname_short }}
+logvol /tmp           --fstype xfs  --name tmp    --size 1000 --vgname lvm.{{ inventory_hostname_short }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /var           --fstype xfs  --name var    --size 1000 --vgname lvm.{{ inventory_hostname_short }} --fsoptions="defaults,nodev,nosuid"
+logvol /var/log       --fstype xfs  --name log    --size 1000 --vgname lvm.{{ inventory_hostname_short }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /var/log/audit --fstype xfs  --name audit  --size 500  --vgname lvm.{{ inventory_hostname_short }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol swap           --fstype swap --name swap   --size 1000 --vgname lvm.{{ inventory_hostname_short }}
+logvol /home          --fstype xfs --name home    --size 100 --vgname lvm.{{ inventory_hostname_short }} --fsoptions="defaults,nodev,nosuid,noexec"
+
+{% endblock %}
+
+%pre --log=/tmp/ks-pre.log
+set -x -v
+%end
+
+
+%post --logfile /root/ks-post.log
+set -x -v
+
+# Create .ssh
+{% if ks.user %}
+install -d --owner={{ ks.user }} --group={{ ks.user }} --mode=700 /home/{{ ks.user }}/.ssh
+cat > /home/{{ ks.user }}/.ssh/authorized_keys << PUBLIC_KEY
+{{ ks.user.pubkey }}
+PUBLIC_KEY
+{% endif %}
+
+install -d --mode=700 /root/.ssh
+cat > /root/.ssh/authorized_keys << PUBLIC_KEY
+{{ bootstrap.ssh_pubkey.initial_user }}
+PUBLIC_KEY
+
+
+# Disable authentication with Passwords
+sed -i 's&^#\?PermitRootLogin[ \t]*.*&PermitRootLogin without-password&' /etc/ssh/sshd_config
+sed -i "s&^PasswordAuthentication[ \t]*.*&PasswordAuthentication no&g" /etc/ssh/sshd_config
+
+%end
+
+%post --nochroot --logfile /mnt/sysimage/root/ks-post-nochroot.log
+set -x -v
+
+# Copy anacondas logfiles
+cp /tmp/*log /mnt/sysimage/root/
+
+# Copy the pre log
+cp /tmp/ks-pre.log /mnt/sysimage/root/ks-pre.log
+cp /tmp/network.ks /mnt/sysimage/root/
+cp /tmp/partitions.ks /mnt/sysimage/root/
+
+# Copy the original ks file (that's me!)
+cp /run/install/ks.cfg /mnt/sysimage/root/
+
+%end
+
+{% block packages %}
+%packages
+@Core --nodefaults
+acpid
+openssh-server
+chrony
+%end
+{% endblock %}
+
+{% block addons %}
+%addon com_redhat_kdump --enable --reserve-mb=auto
+%end
+
+%addon org_fedora_oscap
+    content-type = scap-security-guide
+    profile = default
+%end
+{% endblock %}
