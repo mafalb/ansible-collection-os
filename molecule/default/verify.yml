@@ -24,7 +24,7 @@
     - RHEL6
     changed_when: false
     command: ksvalidator -v {{ item }} /tmp/kickstart-{{ item }}-local.ks
-    
+
   - name: check kickstarts
     loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}" # noqa 204
     changed_when: false
