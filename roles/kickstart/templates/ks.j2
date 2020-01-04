@@ -52,19 +52,19 @@ network --nameservers {{ os_nameservers|join(',') }}
 zerombr
 clearpart --all --initlabel
 
-part /boot --ondisk sda --size 512 --asprimary --label boot
-part pv.00 --ondisk sda --size 12000 --grow --asprimary
+part /boot --recommended --asprimary --label boot
+part pv.00 --size 14000 --grow --asprimary
 
-volgroup lvm.{{ os_fqdn.split('.')[0] }} pv.00
+volgroup lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }} pv.00
 
 # system partitions
-logvol /              --fstype xfs  --name wurzel --size 3000 --vgname lvm.{{ os_fqdn.split('.')[0] }}
-logvol /tmp           --fstype xfs  --name tmp    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
-logvol /var           --fstype xfs  --name var    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid"
-logvol /var/log       --fstype xfs  --name log    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
-logvol /var/log/audit --fstype xfs  --name audit  --size 500  --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
-logvol swap           --fstype swap --name swap   --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0] }}
-logvol /home          --fstype xfs --name home    --size 100  --vgname lvm.{{ os_fqdn.split('.')[0] }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /              --fstype xfs  --name wurzel --size 3000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }}
+logvol /tmp           --fstype xfs  --name tmp    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /var           --fstype xfs  --name var    --size 2000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }} --fsoptions="defaults,nodev,nosuid"
+logvol /var/log       --fstype xfs  --name log    --size 2000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol /var/log/audit --fstype xfs  --name audit  --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }} --fsoptions="defaults,nodev,nosuid,noexec"
+logvol swap           --fstype swap --name swap   --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }}
+logvol /home          --fstype xfs --name home    --size 1000 --vgname lvm.{{ os_fqdn.split('.')[0]|replace('-','_') }} --fsoptions="defaults,nodev,nosuid,noexec"
 
 {% if os_install_root_password is defined %}
 rootpw --iscrypted {{ os_install_root_password }}
