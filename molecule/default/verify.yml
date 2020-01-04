@@ -10,9 +10,32 @@
   tasks:
 
   - name: check kickstarts
-    loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}"
+    loop:
+    - RHEL8
+    - RHEL7
+    - RHEL6
+    changed_when: false
+    command: ksvalidator -v {{ item }} /tmp/kickstart-{{ item }}.ks
+
+  - name: check kickstarts
+    loop:
+    - RHEL8
+    - RHEL7
+    - RHEL6
+    changed_when: false
+    command: ksvalidator -v {{ item }} /tmp/kickstart-{{ item }}-local.ks
+    
+  - name: check kickstarts
+    loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}" # noqa 204
     changed_when: false
     command: ksvalidator -v {{ item[0] }} /tmp/kickstart-{{ item[0] }}-{{ item[1] }}.ks
+
+  - name: check kickstarts for missing whitespace
+    loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}" # noqa 204
+    changed_when: false
+    failed_when: __whitespace.rc == 0
+    command: grep -P -- '\w--' /tmp/kickstart-{{ item[0] }}-{{ item[1] }}.ks
+    register: __whitespace
 
   - name: clock is in utc
     changed_when: false
