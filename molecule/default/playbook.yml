@@ -26,7 +26,7 @@
       name: mafalb.os.kickstart
     vars:
       os_kickstart_version: "{{ version }}"
-      dest: /tmp/kickstart-"{{ version }}.ks
+      dest: /tmp/kickstart-{{ version }}.ks
       os_fqdn: testfqdn.mafalb.at
     loop_control:
       loop_var: version
@@ -41,7 +41,7 @@
     vars:
       os_kickstart_version: "{{ version }}"
       src: test.ks.j2
-      dest: /tmp/kickstart-"{{ version }}-local.ks
+      dest: /tmp/kickstart-{{ version }}-local.ks
       os_fqdn: testfqdn.mafalb.at
       os_utc: false
     loop_control:
