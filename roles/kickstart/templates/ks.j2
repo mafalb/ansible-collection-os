@@ -33,7 +33,7 @@ skipx
 {% for device,cfg in os_network.devices.iteritems() %}
 network --device {{ device }} 
 {%- if cfg.ipv4|default([]) %}
- --bootproto {% if cfg.ipv4.ip|default('dhcp') == 'dhcp' %}dhcp{% else %}static --ip {{ cfg.ipv4.ip }} --netmask {{ cfg.ipv4.netmask }}{% if cfg.ipv4.gateway is defined %} --gateway {{ cfg.ipv4.gateway }}{% endif %}{% endif -%}
+ --bootproto {% if cfg.ipv4.ip|default('dhcp') == 'dhcp' %}dhcp{% else %}static --ip {{ cfg.ipv4.ip }} --netmask {{ cfg.ipv4.netmask }}{% if cfg.ipv4.gateway is defined %} --gateway {{ cfg.ipv4.gateway }}{% endif %}{% endif %}
 {% else %}
  --noipv4
 {%- endif %}
