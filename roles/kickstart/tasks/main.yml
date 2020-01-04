@@ -16,6 +16,12 @@
   - never
   - debug
 
+- name: debug
+  debug: var=os_network
+  tags:
+  - never
+  - debug
+
 - name: kickstart file is present
   with_first_found:
   - "{{ src|default(omit) }}"

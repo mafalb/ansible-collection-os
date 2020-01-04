@@ -1,37 +1,48 @@
 # vim: ft=yaml ts=2 expandtab nowrap:
 ---
 
-- name: Converge
+- name: Converge with default network config
+  hosts: all
+
+  vars_files:
+  - vars/main.yml
+
   vars:
+
     os_wheel_users:
     - user: mafalb
       pubkeys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAqBKLbgm/95GnBGIMYWgE2EJAKRdczIQn/1os53H9wHR7/d8BN4NUQVaeKvoBku/FR1SaC/K8iEE/YDrOcq4oQ5Q8sDOYpf8iMlfit8uo09ZtY4REk0zo54VwDGsaxJuk7fZi4UVWAVe73zH8Af/zoFwA4kp7Lg5UWDrk0wAz3WdSROu7Eh/xvBTdwoJTV9bOT+DjB7IdyGjBpT3fAnIkBdDPcFfhVCiDPGaL3r6E6T/FmjwXIK7urrRdggQ0aVdujwNrCemVODouTe0dyfPGtx+yN/yHLe1PSY+MuIdQGpcXqLHFwYTLwK/X7NG+Mq2+geLYyaSB5XlStMjFkZrpuQ== mafalb # noqa 204
 
-  hosts: all
 
   roles:
 
-    - role: mafalb.os.kickstart
-      os_kickstart_version: RHEL8
-      dest: /tmp/kickstart-RHEL8.ks
-      os_fqdn: testfqdn.mafalb.at
+  - name: mafalb.os.kickstart
+    os_kickstart_version: RHEL8
+    dest: /tmp/kickstart-RHEL8.ks
+    os_fqdn: testfqdn.mafalb.at
 
-    - role: mafalb.os.kickstart
-      os_kickstart_version: RHEL8
-      src: test.ks.j2
-      dest: /tmp/kickstart-RHEL8-local.ks
-      os_fqdn: testfqdn.mafalb.at
-      os_utc: false
+  - name: mafalb.os.kickstart
+    os_kickstart_version: RHEL8
+    src: test.ks.j2
+    dest: /tmp/kickstart-RHEL8-local.ks
+    os_fqdn: testfqdn.mafalb.at
+    os_utc: false
 
-    - role: mafalb.os.kickstart
-      os_kickstart_version: RHEL7
-      dest: /tmp/kickstart-RHEL7.ks
-      os_fqdn: testfqdn.mafalb.at
+  tasks:
 
-    - role: mafalb.os.kickstart
-      os_kickstart_version: RHEL6
-      dest: /tmp/kickstart-RHEL6.ks
+  - debug: var=network_configs
+
+  - name: kickstart with different network configs
+    loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}"
+    include_role:
+      name: mafalb.os.kickstart
+    vars:
+      os_kickstart_version: "{{ network_config[0] }}"
+      dest: /tmp/kickstart-{{ network_config[0] }}-{{ network_config[1] }}.ks
       os_fqdn: testfqdn.mafalb.at
+      os_network: "{{ network_configs[network_config[1]] }}"
+    loop_control:
+      loop_var: network_config
 
 ...

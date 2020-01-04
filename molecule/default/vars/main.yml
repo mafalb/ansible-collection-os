@@ -1,0 +1,63 @@
+# vim: set ft=yaml ts=2 expandtab:
+---
+network_configs:
+
+  ipv6_only_static:
+    devices:
+      link:
+        ipv6:
+          ip: fd00:1264::34/64
+          gateway: fe80::1
+  
+  ipv6_only_static_wo_gateway:
+    devices:
+      link:
+        ipv6:
+          ip: fd00:1264::34/64
+
+  ipv4_only_static:
+     devices:
+       link:
+         ipv4:
+           ip: 192.168.0.2
+           netmask: 255.255.255.0
+           gateway: 192.168.0.1
+
+  ipv4_only_static_wo_gateway:
+     devices:
+       link:
+         ipv4:
+           ip: 192.168.0.2
+           netmask: 255.255.255.0
+
+  static:
+    devices:
+      link:
+        ipv4:
+          ip: 192.168.0.2
+          netmask: 255.255.255.0
+        ipv6:
+          ip: fd00:1264::34/64
+          gateway: fd00:1264::1
+
+  auto:
+    devices:
+      link:
+        ipv4:
+          ip: dhcp
+        ipv6:
+          ip: auto
+    
+  no_ipv4:
+    devices:
+      link:
+        ipv6:
+          ip: auto
+
+  no_ipv6:
+    devices:
+      link:
+        ipv4:
+          ip: dhcp
+
+...

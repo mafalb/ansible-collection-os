@@ -17,6 +17,36 @@ os_timezone: Europe/Vienna
 os_utc: true
 ```
 
+Example network configuration:
+
+```yaml
+os_network:
+  nameservers:
+  - xx.xx.xx.2
+  - xx.xx.xx.3
+  devices:
+    eno1: 
+      ipv4:
+        ip: xx.xx.xx.4
+        netmask: 255.255.255.0
+        gateway: xx.xx.xx.1
+      ipv6:
+        ip: x:x:x:x::4/64
+        gateway: x:x:x:x::1
+    eno2:
+      ipv4:
+        ip: dhcp
+      ipv6:
+        ip: auto
+    eno3:
+      ipv4:
+        ip: dhcp
+    eno4:
+      ipv6:
+        ip: auto
+    
+```
+
 ## role: mafalb.os.kickstart
 
 ### Usage

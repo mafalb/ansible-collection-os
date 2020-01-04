@@ -20,4 +20,11 @@ os_lang:
 os_timezone: Europe/Vienna
 os_utc: true
 
+os_network:
+  devices:
+    link:
+      ipv4:
+        ip: dhcp
+      ipv6:
+        ip: auto
 ...

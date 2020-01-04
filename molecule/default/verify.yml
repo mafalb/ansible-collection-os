@@ -4,11 +4,15 @@
 - name: Verify
   hosts: all
 
+  vars_files:
+  - vars/main.yml
+
   tasks:
 
-  - name: check /tmp/kickstart-RHEL8.ks
+  - name: check kickstarts
+    loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}"
     changed_when: false
-    command: ksvalidator -v RHEL8 /tmp/kickstart-RHEL8.ks
+    command: ksvalidator -v {{ item[0] }} /tmp/kickstart-{{ item[0] }}-{{ item[1] }}.ks
 
   - name: clock is in utc
     changed_when: false
@@ -24,11 +28,4 @@
     command: grep -- --utc /tmp/kickstart-RHEL8-local.ks
     register: __not_utc
 
-  - name: check /tmp/kickstart-RHEL7.ks
-    changed_when: false
-    command: ksvalidator -v RHEL7 /tmp/kickstart-RHEL7.ks
-
-  - name: check /tmp/kickstart-RHEL6.ks
-    changed_when: false
-    command: ksvalidator -v RHEL6 /tmp/kickstart-RHEL6.ks
 ...
