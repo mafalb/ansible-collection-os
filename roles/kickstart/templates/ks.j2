@@ -108,13 +108,18 @@ cp /run/install/ks.cfg /mnt/sysimage/root/
 
 %end
 
-{% block packages %}
+{% if os_kickstart_version in ['RHEL6'] %}
+%packages --nobase
+{% else %}
 %packages
+{% endif %}
 @Core --nodefaults
 openssh-server
+openssh-clients
 chrony
+rsync
+parted
 %end
-{% endblock %}
 
 {% block addons %}
 %addon com_redhat_kdump --enable --reserve-mb=auto
