@@ -31,6 +31,18 @@
     loop_control:
       loop_var: version
 
+  - name: create install script for libvirt
+    include_role:
+      name: mafalb.os.virtinstall
+    vars:
+      os_fqdn: testfqdn.mafalb.at
+      dest: /tmp/testfqdn.sh
+      os_kickstart_file: /tmp/kickstart-RHEL8.ks
+      os_install_image: /dev/null
+      os_variant: rhel8.0
+      os_bridge: br0
+      os_disk_pool: lvm.bla
+
   - name: create kickstart with local template
     loop:
     - RHEL8

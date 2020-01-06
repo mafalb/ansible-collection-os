@@ -39,5 +39,4 @@ galaxy_info:
     - kickstart
     - install
 
-dependencies:
-- mafalb.os.cfg
+dependencies: []
