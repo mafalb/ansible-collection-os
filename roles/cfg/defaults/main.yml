@@ -1,9 +1,6 @@
 # vim: set ft=yaml ts=2 expandtab:
 ---
 
-__src_path: "{{ src is defined|ternary(playbook_dir + '/', None) }}"
-__src_file: "{{ src|default('ks.j2') }}"
-
 os_install_type: install
 os_install_method: cdrom
 
@@ -27,4 +24,9 @@ os_network:
         ip: dhcp
       ipv6:
         ip: auto
+
+# only for virtual machines
+os_ram: 4096
+os_disk_size: 20
+
 ...

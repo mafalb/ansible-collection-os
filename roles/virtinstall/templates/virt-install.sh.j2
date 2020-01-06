@@ -1,0 +1,18 @@
+#! /usr/bin/env sh
+HOSTNAME={{ os_fqdn.split('.')[0] }}
+
+virt-install \
+  --name $HOSTNAME \
+  --initrd-inject={{ os_kickstart_file }} \
+  -x "inst.ks=file:///$HOSTNAME.ks --hostname {{ os_fqdn }} console=tty0 console=ttyS0,115200 " \
+  -l {{ os_install_image }} \
+  --autostart \
+  -v --virt-type kvm \
+  --rng /dev/random \
+  --memballoon model=virtio \
+  --serial pty \
+  --graphics=none \
+  --network bridge={{ os_bridge }} \
+  --disk pool={{ os_disk_pool }},size={{ os_disk_size }} \
+  --os-variant {{ os_variant }} \
+  -r {{ os_ram }}

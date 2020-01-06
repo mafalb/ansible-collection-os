@@ -1,0 +1,39 @@
+# vim: set ft=yaml ts=2 expandtab:
+---
+
+- name: assertions
+  assert:
+    that:
+    - os_install_method in ["cdrom"]
+    - os_fqdn is defined
+    - dest is defined
+    - os_kickstart_file is defined
+    - os_variant is defined
+    - os_bridge is defined
+
+- name: path to cdrom is present
+  assert:
+    that:
+    - os_install_image is defined
+
+- name: path to cdrom is present
+  file:
+    path: "{{ os_install_image }}"
+    state: file
+
+- name: kickstart file is present
+  file:
+    path: "{{ os_kickstart_file }}"
+    state: file
+
+- name: install script is present
+  with_first_found:
+  - "{{ src|default(omit) }}"
+  - virt-install.sh.j2
+  template:
+    src: "{{ item }}"
+    dest: "{{ dest }}"
+    mode: 00755
+    validate: bash -n %s
+
+...
