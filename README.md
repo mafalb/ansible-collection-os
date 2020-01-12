@@ -1,5 +1,6 @@
 # Ansible collection for configuring Operating systems
 
+
 ## OS data
 
 ```yaml
