@@ -7,8 +7,6 @@ os_install_method: cdrom
 os_keyboard:
 - at
 - us
-- us-mac
-- at-mac
 
 os_lang:
 - en_US.UTF-8

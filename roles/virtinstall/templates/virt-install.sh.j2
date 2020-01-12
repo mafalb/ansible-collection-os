@@ -1,10 +1,9 @@
 #! /usr/bin/env sh
-HOSTNAME={{ os_fqdn.split('.')[0] }}
 
 virt-install \
-  --name $HOSTNAME \
+  --name {{ os_fqdn.split('.')[0] }} \
   --initrd-inject={{ os_kickstart_file }} \
-  -x "inst.ks=file:///$HOSTNAME.ks --hostname {{ os_fqdn }} console=tty0 console=ttyS0,115200 " \
+  -x "inst.ks=file:///{{ os_kickstart_file.split('/')[-1] }} --hostname {{ os_fqdn }} console=tty0 console=ttyS0,115200 " \
   -l {{ os_install_image }} \
   --autostart \
   -v --virt-type kvm \

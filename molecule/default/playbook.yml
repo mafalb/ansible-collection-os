@@ -60,7 +60,19 @@
       loop_var: version
 
   - name: kickstart with different network configs
-    loop: "{{ ['RHEL8','RHEL7','RHEL6']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}" # noqa 204
+    loop: "{{ ['RHEL8','RHEL7']|product(['ipv6_only_static','ipv6_only_static_wo_gateway','ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}" # noqa 204
+    include_role:
+      name: mafalb.os.kickstart
+    vars:
+      os_kickstart_version: "{{ network_config[0] }}"
+      dest: /tmp/kickstart-{{ network_config[0] }}-{{ network_config[1] }}.ks
+      os_fqdn: testfqdn.mafalb.at
+      os_network: "{{ network_configs[network_config[1]] }}"
+    loop_control:
+      loop_var: network_config
+
+  - name: kickstart with different network configs
+    loop: "{{ ['RHEL6']|product(['ipv4_only_static','ipv4_only_static_wo_gateway','auto','no_ipv4','no_ipv6'])|list }}" # noqa 204
     include_role:
       name: mafalb.os.kickstart
     vars:

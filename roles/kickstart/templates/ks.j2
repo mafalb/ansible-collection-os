@@ -30,7 +30,7 @@ bootloader --location=mbr
 firstboot --disable
 skipx
 
-{% for device,cfg in os_network.devices.iteritems() %}
+{% for device,cfg in os_network.devices.items() %}
 network --device {{ device }} 
 {%- if cfg.ipv4|default([]) %}
  --bootproto {% if cfg.ipv4.ip|default('dhcp') == 'dhcp' %}dhcp{% else %}static --ip {{ cfg.ipv4.ip }} --netmask {{ cfg.ipv4.netmask }}{% if cfg.ipv4.gateway is defined %} --gateway {{ cfg.ipv4.gateway }}{% endif %}{% endif %}
@@ -38,15 +38,15 @@ network --device {{ device }}
  --noipv4
 {%- endif %}
 {% if cfg.ipv6|default([]) %}
- --ipv6 {{ cfg.ipv6.ip }}{% if cfg.ipv6.gateway|default(false) %} --gateway {{ cfg.ipv6.gateway }}{% endif %}
+ --ipv6 {{ cfg.ipv6.ip }}{% if cfg.ipv6.gateway|default(false) %} --ipv6gateway={{ cfg.ipv6.gateway }}{% endif %}
 {% else %}
  --noipv6
 {%- endif %}
 {% endfor %}
 
 network --hostname={{ os_fqdn }}
-{% if os_network.nameservers is defined %}
-network --nameservers {{ os_nameservers|join(',') }}
+{% if os_nameservers is defined %}
+network --nameserver {{ os_nameservers|join(',') }}
 {% endif %}
 
 zerombr
