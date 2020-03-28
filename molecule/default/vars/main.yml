@@ -8,7 +8,7 @@ network_configs:
         ipv6:
           ip: fd00:1264::34/64
           gateway: fe80::1
-  
+
   ipv6_only_static_wo_gateway:
     devices:
       link:
@@ -47,7 +47,7 @@ network_configs:
           ip: dhcp
         ipv6:
           ip: auto
-    
+
   no_ipv4:
     devices:
       link:
