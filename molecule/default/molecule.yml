@@ -3,8 +3,15 @@ dependency:
   name: galaxy
 driver:
   name: docker
-lint:
-  name: yamllint
+
+lint: |
+  set -e
+  ! grep -r "no_log: false" .
+  yamllint .
+  ansible-lint -v
+  ansible-lint -v vars/*.yml
+  flake8 -v
+
 platforms:
   - name: fedora
     image: fedora:latest
