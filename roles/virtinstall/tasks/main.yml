@@ -20,11 +20,13 @@
   file:
     path: "{{ os_install_image }}"
     state: file
+    mode: 0644
 
 - name: kickstart file is present
   file:
     path: "{{ os_kickstart_file }}"
     state: file
+    mode: 0640
 
 - name: install script is present
   with_first_found:

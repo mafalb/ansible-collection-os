@@ -29,5 +29,6 @@
   template:
     src: "{{ item }}"
     dest: "{{ dest }}"
+    mode: 0644
 
 ...
